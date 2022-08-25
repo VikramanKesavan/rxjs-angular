@@ -26,6 +26,9 @@ export class AppComponent implements OnInit {
       complete: () => console.log(`complete`),
     });
 
+    // Tip: Use Operator decision tree in rxjs website to
+    // select the precise operator
+
     console.log('-----map Operator----');
     // Operators
     // source observable is the root of the data
