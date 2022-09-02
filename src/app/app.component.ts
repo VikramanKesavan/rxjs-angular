@@ -1,5 +1,5 @@
 import { Component, OnInit, VERSION } from '@angular/core';
-import { of, from, map, tap, take } from 'rxjs';
+import { of, from, map, tap, take, catchError, throwError, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'my-app',
@@ -65,6 +65,59 @@ export class AppComponent implements OnInit {
         next: (item) => console.log(`map resulting item..${item}`),
         error: (err) => console.log(`map error occured ${err}`),
         complete: () => console.log(`map complete`),
+      });
+
+    console.log('----catchError Operator----');
+    of(2, 4, 3, 6)
+      .pipe(
+        map((i) => {
+          if (i === 4 || i === 6) {
+            throw 'Error!';
+          }
+          return i;
+        }),
+        catchError((err) => of(10, 4, 6, 7, 8, 8)) // new observable starts here
+      )
+      .subscribe({
+        next: (item) => console.log(`map resulting item..${item}`),
+        error: (err) => console.log(`map error occured ${err}`),
+        complete: () => console.log(`new observer complete`),
+      });
+
+    console.log('----throwError Operator----');
+    of(2, 4, 3, 6)
+      .pipe(
+        map((i) => {
+          if (i === 4 || i === 6) {
+            throw 'Error!';
+          }
+          return i;
+        }),
+        catchError((err) => throwError(() => err)) // propagates the error with less or more info to other parts
+      )
+      .subscribe({
+        next: (item) => console.log(`map resulting item..${item}`),
+        error: (err) => console.log(`map error occured ${err}`),
+        complete: () => console.log(`new observer complete`),
+      });
+
+    console.log('----rxjs contant: Empty----');
+    of(2, 4, 3, 6)
+      .pipe(
+        map((i) => {
+          if (i === 4 || i === 6) {
+            throw 'Error!';
+          }
+          return i;
+        }),
+        catchError((err) => {
+          return EMPTY; // replace error with no items
+        })
+      )
+      .subscribe({
+        next: (item) => console.log(`map resulting item..${item}`),
+        error: (err) => console.log(`map error occured ${err}`),
+        complete: () => console.log(`new observer complete`),
       });
   }
 }
